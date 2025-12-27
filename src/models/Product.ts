@@ -14,6 +14,9 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    imageUrl: {
+      type: String,
+    },
   },
   { timestamps: true }
 );

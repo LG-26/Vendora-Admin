@@ -43,6 +43,17 @@ export default async function ProductsPage() {
               <td>₹{product.price}</td>
               <td>{product.stock}</td>
               <td>
+                {product.imageUrl && (
+                  <img
+                    src={product.imageUrl}
+                    alt={product.name}
+                    width={60}
+                    height={60}
+                  />
+                )}
+              </td>
+
+              <td>
                 <form action={deleteProduct}>
                   <input type="hidden" name="id" value={product._id} />
                   <button type="submit">Delete</button>

@@ -56,6 +56,13 @@ export default function AddProductPage() {
               <input type="number" name="stock" required />
             </div>
 
+            <div>
+              <label>Product Image</label>
+              <br />
+              <input type="file" name="image" accept="image/*" />
+            </div>
+
+
             <button type="button" onClick={() => setStep(1)}>
               Back
             </button>
