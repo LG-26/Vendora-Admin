@@ -1,59 +1,70 @@
-import { connectDB } from "@/lib/mongodb";
-import { Product } from "@/models/Product";
-import { redirect } from "next/navigation";
-import { productSchema } from "@/lib/validators/product";
+"use client";
+
+import { useState } from "react";
+import { addProduct } from "./action";
 
 export default function AddProductPage() {
+  const [step, setStep] = useState(1);
 
-  async function addProduct(formData: FormData) {
-    "use server";
-
-    const rawData = {
-    name: formData.get("name"),
-    price: Number(formData.get("price")),
-    stock: Number(formData.get("stock")),
-  };
-
-  const parsed = productSchema.safeParse(rawData);
-
-  if (!parsed.success) {
-    throw new Error(parsed.error.issues[0].message);
-  }
-
-  await connectDB();
-  await Product.create(parsed.data);
-
-    redirect("/admin/products");
-  }
+  const [name, setName] = useState("");
+  const [price, setPrice] = useState("");
 
   return (
     <div>
-      <h1 style={{ fontSize: "24px", marginBottom: "20px" }}>
-        Add Product
-      </h1>
+      <h1>Add Product (Step {step} of 2)</h1>
 
       <form action={addProduct}>
-        <div style={{ marginBottom: "12px" }}>
-          <label>Product Name</label>
-          <br />
-          <input type="text" name="name" required />
-        </div>
+        {step === 1 && (
+          <>
+            <div>
+              <label>Product Name</label>
+              <br />
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
 
-        <div style={{ marginBottom: "12px" }}>
-          <label>Price</label>
-          <br />
-          <input type="number" name="price" required />
-        </div>
+            <div>
+              <label>Price</label>
+              <br />
+              <input
+                type="number"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                required
+              />
+            </div>
 
-        <div style={{ marginBottom: "12px" }}>
-          <label>Stock</label>
-          <br />
-          <input type="number" name="stock" required />
-        </div>
+            <button type="button" onClick={() => setStep(2)}>
+              Next
+            </button>
+          </>
+        )}
 
-        <button type="submit">
-          Add Product
-        </button>
+        {step === 2 && (
+          <>
+            {/* hidden inputs to preserve step 1 data */}
+            <input type="hidden" name="name" value={name} />
+            <input type="hidden" name="price" value={price} />
+
+            <div>
+              <label>Stock</label>
+              <br />
+              <input type="number" name="stock" required />
+            </div>
+
+            <button type="button" onClick={() => setStep(1)}>
+              Back
+            </button>
+
+            <button type="submit">
+              Create Product
+            </button>
+          </>
+        )}
       </form>
     </div>
   );
