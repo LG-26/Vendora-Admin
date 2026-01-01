@@ -10,14 +10,22 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-export default function StockChart({ data }: { data: any[] }) {
+interface TopProductData {
+  name: string;
+  sales: number;
+}
+
+export default function TopProductsChart({ data }: { data: TopProductData[] }) {
+  // Take top 5 products
+  const topProducts = [...data].sort((a, b) => b.sales - a.sales).slice(0, 5);
+
   return (
     <div style={{ width: "100%", height: 300 }}>
       <ResponsiveContainer>
-        <BarChart data={data}>
+        <BarChart data={topProducts} layout="vertical">
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-          <XAxis dataKey="name" stroke="#6b7280" angle={-45} textAnchor="end" height={80} />
-          <YAxis stroke="#6b7280" />
+          <XAxis type="number" stroke="#6b7280" />
+          <YAxis dataKey="name" type="category" stroke="#6b7280" width={120} />
           <Tooltip
             contentStyle={{
               backgroundColor: "#fff",
@@ -25,9 +33,10 @@ export default function StockChart({ data }: { data: any[] }) {
               borderRadius: "8px",
             }}
           />
-          <Bar dataKey="stock" fill="#6366f1" radius={[8, 8, 0, 0]} name="Stock" />
+          <Bar dataKey="sales" fill="#f59e0b" radius={[0, 8, 8, 0]} name="Units Sold" />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 }
+

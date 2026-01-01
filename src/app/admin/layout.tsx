@@ -1,4 +1,4 @@
-import React from "react";
+import AdminNav from "@/components/AdminNav";
 
 export default function AdminLayout({
   children,
@@ -6,23 +6,24 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div style={{ display: "flex", minHeight: "100vh" }}>
+    <div className="min-h-screen flex bg-gray-50">
       {/* Sidebar */}
-      <aside
-        style={{
-          width: "220px",
-          backgroundColor: "#f3f4f6",
-          padding: "20px",
-        }}
-      >
-        <h2>Admin Panel</h2>
-        <p>Dashboard</p>
-        <p>Products</p>
+      <aside className="w-64 bg-white border-r border-gray-200 flex flex-col shadow-sm">
+        <div className="p-6 border-b border-gray-200">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            Vendora Admin
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">Dashboard</p>
+        </div>
+
+        <AdminNav />
       </aside>
 
-      {/* Main Content */}
-      <main style={{ flex: 1, padding: "20px" }}>
-        {children}
+      {/* Main content */}
+      <main className="flex-1 overflow-x-auto">
+        <div className="p-8">
+          {children}
+        </div>
       </main>
     </div>
   );

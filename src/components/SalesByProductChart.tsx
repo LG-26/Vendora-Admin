@@ -8,9 +8,16 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from "recharts";
 
-export default function StockChart({ data }: { data: any[] }) {
+interface ProductSalesData {
+  name: string;
+  sales: number;
+  revenue: number;
+}
+
+export default function SalesByProductChart({ data }: { data: ProductSalesData[] }) {
   return (
     <div style={{ width: "100%", height: 300 }}>
       <ResponsiveContainer>
@@ -25,9 +32,12 @@ export default function StockChart({ data }: { data: any[] }) {
               borderRadius: "8px",
             }}
           />
-          <Bar dataKey="stock" fill="#6366f1" radius={[8, 8, 0, 0]} name="Stock" />
+          <Legend />
+          <Bar dataKey="sales" fill="#10b981" name="Units Sold" radius={[8, 8, 0, 0]} />
+          <Bar dataKey="revenue" fill="#8b5cf6" name="Revenue (₹)" radius={[8, 8, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
 }
+
