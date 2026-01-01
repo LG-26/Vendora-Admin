@@ -61,7 +61,7 @@ export default function AddProductPage() {
 
               <div className="flex justify-end pt-4">
                 <button
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+                  className="px-6 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
                   type="button"
                   onClick={() => setStep(2)}
                 >
@@ -116,7 +116,7 @@ export default function AddProductPage() {
                 </button>
 
                 <button
-                  className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+                  className="px-6 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
                   type="submit"
                 >
                   Create Product

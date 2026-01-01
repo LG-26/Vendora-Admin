@@ -31,8 +31,11 @@ export default async function AdminDashboard() {
     0
   );
   const totalOrders = orders.length;
-  const totalUnitsSold = products.reduce(
-    (sum: number, product: any) => sum + (product.salesCount || 0),
+
+  // Compute total units sold from orders (avoid relying on persisted Product.salesCount)
+  const totalUnitsSold = orders.reduce(
+    (sum: number, order: any) =>
+      sum + order.items.reduce((s: number, it: any) => s + (it.quantity || 0), 0),
     0
   );
 
@@ -55,20 +58,43 @@ export default async function AdminDashboard() {
     };
   });
 
-  // Sales by product
-  const salesByProduct = products.map((product: any) => ({
-    name: product.name.length > 15 ? product.name.substring(0, 15) + "..." : product.name,
-    sales: product.salesCount || 0,
-    revenue: product.revenue || 0,
-  })).filter(item => item.sales > 0);
+  // Build sales data by aggregating orders (accurate even if Product.salesCount is stale)
+  const productSalesMap: Record<string, { name: string; sales: number; revenue: number }> = {};
 
-  // Top products
-  const topProducts = products
-    .map((product: any) => ({
-      name: product.name.length > 20 ? product.name.substring(0, 20) + "..." : product.name,
-      sales: product.salesCount || 0,
+  products.forEach((p: any) => {
+    productSalesMap[p._id.toString()] = {
+      name: p.name.length > 15 ? p.name.substring(0, 15) + "..." : p.name,
+      sales: 0,
+      revenue: 0,
+    };
+  });
+
+  orders.forEach((order: any) => {
+    order.items.forEach((it: any) => {
+      const pid = it.productId.toString();
+      if (!productSalesMap[pid]) {
+        productSalesMap[pid] = {
+          name: it.productName.length > 15 ? it.productName.substring(0, 15) + "..." : it.productName,
+          sales: 0,
+          revenue: 0,
+        };
+      }
+      productSalesMap[pid].sales += it.quantity || 0;
+      productSalesMap[pid].revenue += (it.price || 0) * (it.quantity || 0);
+    });
+  });
+
+  const salesByProduct = Object.values(productSalesMap).filter((item) => item.sales > 0);
+
+  // Top products (sorted by sales)
+  const topProducts = Object.values(productSalesMap)
+    .map((item) => ({
+      name: item.name.length > 20 ? item.name.substring(0, 20) + "..." : item.name,
+      sales: item.sales,
     }))
-    .filter(item => item.sales > 0);
+    .filter((item) => item.sales > 0)
+    .sort((a, b) => b.sales - a.sales)
+    .slice(0, 10);
 
   // Recent orders (last 5)
   const recentOrders = orders
@@ -84,7 +110,7 @@ export default async function AdminDashboard() {
         </div>
         <Link
           href="/admin/products/add"
-          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+          className="px-4 py-2 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
         >
           + Add Product
         </Link>
@@ -158,7 +184,7 @@ export default async function AdminDashboard() {
           {topProducts.length > 0 ? (
             <TopProductsChart data={topProducts} />
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-gray-500">
+            <div className="flex items-center justify-center h-75 text-gray-500">
               No sales data available
             </div>
           )}
@@ -176,7 +202,7 @@ export default async function AdminDashboard() {
           {salesByProduct.length > 0 ? (
             <SalesByProductChart data={salesByProduct} />
           ) : (
-            <div className="flex items-center justify-center h-[300px] text-gray-500">
+            <div className="flex items-center justify-center h-75 text-gray-500">
               No sales data available
             </div>
           )}

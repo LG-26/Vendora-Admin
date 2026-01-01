@@ -25,7 +25,7 @@ export default async function ProductsPage() {
         <h1 className="text-3xl font-bold text-gray-900">Products</h1>
         <Link
           href="/admin/products/add"
-          className="px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+          className="px-4 py-2 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
         >
           + Add Product
         </Link>

@@ -1,5 +1,8 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { connectDB } from "@/lib/mongodb";
+import { Admin } from "@/models/Admin";
+import bcrypt from "bcryptjs";
 
 const handler = NextAuth({
   providers: [
@@ -17,14 +20,25 @@ const handler = NextAuth({
           password: string;
         };
 
-        if (
-          email === process.env.ADMIN_EMAIL &&
-          password === process.env.ADMIN_PASSWORD
-        ) {
+        await connectDB();
+
+        // Try DB-backed admin first
+        const user = await Admin.findOne({ email }).lean();
+        if (user) {
+          const match = await bcrypt.compare(password, (user as any).passwordHash);
+          if (match) {
+            return { id: user._id.toString(), name: "Admin", email: user.email, role: user.role };
+          }
+          return null;
+        }
+
+        // Fallback to env bootstrap admin (one-time use)
+        if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
           return {
-            id: "admin",
+            id: "bootstrap-admin",
             name: "Admin",
             email,
+            role: "admin",
           };
         }
 
@@ -35,6 +49,19 @@ const handler = NextAuth({
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
+  },
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        // copy role into token when available
+        (token as any).role = (user as any).role || "admin";
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      (session as any).user.role = (token as any).role || "admin";
+      return session;
+    },
   },
 });
 

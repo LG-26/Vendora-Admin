@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function AdminNav() {
   const pathname = usePathname();
@@ -14,6 +14,8 @@ export default function AdminNav() {
     { href: "/admin/orders", label: "Orders" },
     { href: "/admin/orders/add", label: "Add Order" },
   ];
+
+  const { data: session } = useSession();
 
   const isActive = (href: string) => {
     if (href === "/admin") {
@@ -40,7 +42,14 @@ export default function AdminNav() {
           </Link>
         );
       })}
-      
+      {session?.user?.role === "admin" && (
+        <Link
+          href="/admin/onboard"
+          className={`mt-3 px-4 py-3 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100`}
+        >
+          Onboard Admin
+        </Link>
+      )}
       <div className="mt-auto pt-4 border-t border-gray-200">
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
