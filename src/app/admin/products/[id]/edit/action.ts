@@ -3,6 +3,7 @@
 import cloudinary from "@/lib/cloudinary";
 import { connectDB } from "@/lib/mongodb";
 import { Product } from "@/models/Product";
+import { productSchema } from "@/lib/validators/product";
 import { redirect } from "next/navigation";
 
 export async function updateProduct(id: string, formData: FormData) {
@@ -25,24 +26,41 @@ export async function updateProduct(id: string, formData: FormData) {
     imageUrl = result.secure_url;
   }
 
-  const name = formData.get("name") as string;
-  const price = Number(formData.get("price"));
-  const stock = Number(formData.get("stock"));
-
   await connectDB();
 
-  const updateData: any = {
-    name,
-    price,
-    stock,
+  // Get existing product to preserve imageUrl if no new image is uploaded
+  const existingProduct = await Product.findById(id).lean();
+  if (!existingProduct) {
+    throw new Error("Product not found");
+  }
+
+  const rawData = {
+    name: formData.get("name"),
+    price: Number(formData.get("price")),
+    stock: Number(formData.get("stock")),
+    imageUrl: imageUrl || (existingProduct as any).imageUrl || "",
   };
 
-  if (imageUrl) {
-    updateData.imageUrl = imageUrl;
+  const parsed = productSchema.safeParse(rawData);
+
+  if (!parsed.success) {
+    throw new Error(parsed.error.issues[0].message);
+  }
+
+  const updateData: any = {
+    name: parsed.data.name,
+    price: parsed.data.price,
+    stock: parsed.data.stock,
+  };
+
+  if (parsed.data.imageUrl) {
+    updateData.imageUrl = parsed.data.imageUrl;
   }
 
   await Product.findByIdAndUpdate(id, updateData);
 
   redirect("/admin/products");
 }
+
+
 
