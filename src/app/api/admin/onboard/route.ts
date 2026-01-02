@@ -4,7 +4,7 @@ import { connectDB } from "@/lib/mongodb";
 import { Admin } from "@/models/Admin";
 import bcrypt from "bcryptjs";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
   if (!token || (token as any).role !== "admin") {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
