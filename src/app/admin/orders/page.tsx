@@ -1,37 +1,111 @@
-import { connectDB } from "@/lib/mongodb";
-import { Order } from "@/models/Order";
+"use client";
+
+import { useState, useEffect } from "react";
 import Link from "next/link";
 
-export default async function OrdersPage() {
-  await connectDB();
+interface Order {
+  _id: string;
+  orderNumber: string;
+  customerName: string;
+  customerEmail?: string;
+  items: any[];
+  totalAmount: number;
+  status: string;
+  createdAt: string;
+}
 
-  const orders = await Order.find().sort({ createdAt: -1 }).lean();
+export default function OrdersPage() {
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
+
+  async function fetchOrders() {
+    try {
+      const res = await fetch("/api/admin/orders");
+      const data = await res.json();
+      setOrders(data.orders || []);
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+
+  const filteredOrders = orders.filter((order) => {
+    const query = searchQuery.toLowerCase();
+    return (
+      order.orderNumber.toLowerCase().includes(query) ||
+      order.customerName.toLowerCase().includes(query) ||
+      (order.customerEmail && order.customerEmail.toLowerCase().includes(query))
+    );
+  });
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Orders</h1>
-          <p className="text-gray-600 mt-1">View all orders</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            Orders
+          </h1>
+          <p className="text-gray-600 mt-2">View and manage all orders</p>
         </div>
         <Link
           href="/admin/orders/add"
-          className="px-4 py-2 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
+          className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
         >
-          + Add Order
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          </svg>
+          Add Order
         </Link>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        {orders.length === 0 ? (
+      {/* Search Bar */}
+      <div className="relative">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+        </div>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by order number, customer name, or email..."
+          className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white shadow-sm"
+        />
+      </div>
+
+      {/* Orders Table */}
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
+        {filteredOrders.length === 0 ? (
           <div className="p-12 text-center">
-            <p className="text-gray-500 text-lg mb-4">No orders found</p>
-            <p className="text-gray-400 text-sm">Orders will appear here when customers make purchases</p>
+            <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            <p className="text-gray-500 text-lg mb-4">
+              {searchQuery ? "No orders found matching your search" : "No orders found"}
+            </p>
+            {!searchQuery && (
+              <p className="text-gray-400 text-sm">Orders will appear here when customers make purchases</p>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">
                     Order #
@@ -55,15 +129,15 @@ export default async function OrdersPage() {
               </thead>
 
               <tbody className="bg-white divide-y divide-gray-200">
-                {orders.map((order: any) => (
+                {filteredOrders.map((order) => (
                   <tr key={order._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
+                      <div className="text-sm font-semibold text-gray-900">
                         {order.orderNumber}
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <div className="text-sm text-gray-900">{order.customerName}</div>
+                      <div className="text-sm font-medium text-gray-900">{order.customerName}</div>
                       {order.customerEmail && (
                         <div className="text-sm text-gray-500">{order.customerEmail}</div>
                       )}
@@ -76,7 +150,7 @@ export default async function OrdersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-semibold text-gray-900">
+                      <div className="text-sm font-bold text-gray-900">
                         ₹{order.totalAmount.toLocaleString()}
                       </div>
                     </td>
@@ -110,4 +184,3 @@ export default async function OrdersPage() {
     </div>
   );
 }
-

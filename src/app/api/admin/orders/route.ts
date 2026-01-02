@@ -3,6 +3,43 @@ import { connectDB } from "@/lib/mongodb";
 import { Order } from "@/models/Order";
 import { Product } from "@/models/Product";
 
+export async function GET(req: Request) {
+  try {
+    await connectDB();
+    const { searchParams } = new URL(req.url);
+    const search = searchParams.get("search");
+
+    if (search && search.length >= 2) {
+      const searchRegex = new RegExp(search, "i");
+      const orders = await Order.find({
+        $or: [
+          { customerName: searchRegex },
+          { customerEmail: searchRegex },
+          { orderNumber: searchRegex },
+        ],
+      })
+        .sort({ createdAt: -1 })
+        .lean()
+        .limit(50);
+
+      return NextResponse.json({ orders });
+    }
+
+    // Return all orders if no search query
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .lean();
+
+    return NextResponse.json({ orders });
+  } catch (error: any) {
+    console.error("Error fetching orders:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to fetch orders" },
+      { status: 500 }
+    );
+  }
+}
+
 export async function POST(req: Request) {
   try {
     await connectDB();
@@ -90,4 +127,7 @@ export async function POST(req: Request) {
     );
   }
 }
+
+
+
 

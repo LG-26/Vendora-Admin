@@ -14,14 +14,19 @@ export default function AnimatedBackground() {
     { icon: "📱", delay: 4.5, left: "80%", top: "75%" },
     { icon: "⭐", delay: 2, left: "40%", top: "40%" },
     { icon: "🎯", delay: 3, left: "70%", top: "30%" },
+    { icon: "🔄", delay: 1.2, left: "30%", top: "10%" },
+    { icon: "📋", delay: 2.8, left: "55%", top: "65%" },
+    { icon: "🎁", delay: 4.2, left: "20%", top: "85%" },
+    { icon: "🏪", delay: 0.8, left: "65%", top: "35%" },
   ];
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Animated e-commerce icons */}
       {ecommerceIcons.map((item, index) => (
         <div
           key={index}
-          className="absolute text-4xl md:text-5xl opacity-20 hover:opacity-30 transition-opacity animate-float"
+          className="absolute text-4xl md:text-5xl opacity-25 hover:opacity-40 transition-opacity animate-float"
           style={{
             left: item.left,
             top: item.top,
@@ -33,11 +38,21 @@ export default function AnimatedBackground() {
         </div>
       ))}
       
-      {/* Floating gradient orbs */}
-      <div className="absolute w-96 h-96 bg-purple-400 rounded-full blur-3xl opacity-30 -top-24 -left-24 animate-drift" />
-      <div className="absolute w-[500px] h-[500px] bg-pink-400 rounded-full blur-3xl opacity-30 top-1/3 -right-24 animate-drift-reverse" />
-      <div className="absolute w-80 h-80 bg-indigo-400 rounded-full blur-3xl opacity-30 -bottom-12 left-1/4 animate-drift" />
-      <div className="absolute w-72 h-72 bg-blue-400 rounded-full blur-3xl opacity-25 top-1/2 right-1/5 animate-pulse-slow" />
+      {/* Enhanced floating gradient orbs with more movement */}
+      <div className="absolute w-96 h-96 bg-purple-400 rounded-full blur-3xl opacity-35 -top-24 -left-24 animate-drift" />
+      <div className="absolute w-[500px] h-[500px] bg-pink-400 rounded-full blur-3xl opacity-35 top-1/3 -right-24 animate-drift-reverse" />
+      <div className="absolute w-80 h-80 bg-indigo-400 rounded-full blur-3xl opacity-35 -bottom-12 left-1/4 animate-drift" />
+      <div className="absolute w-72 h-72 bg-blue-400 rounded-full blur-3xl opacity-30 top-1/2 right-1/5 animate-pulse-slow" />
+      <div className="absolute w-[400px] h-[400px] bg-cyan-400 rounded-full blur-3xl opacity-25 top-3/4 left-1/2 animate-drift" />
+      <div className="absolute w-64 h-64 bg-violet-400 rounded-full blur-3xl opacity-30 bottom-1/4 right-1/3 animate-drift-reverse" />
+      
+      {/* Animated grid pattern */}
+      <div className="absolute inset-0 opacity-10" style={{
+        backgroundImage: `linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
+                          linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px)`,
+        backgroundSize: '50px 50px',
+        animation: 'drift 30s ease-in-out infinite'
+      }} />
     </div>
   );
 }

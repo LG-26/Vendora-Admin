@@ -6,6 +6,7 @@ import RevenueChart from "@/components/RevenueChart";
 import SalesByProductChart from "@/components/SalesByProductChart";
 import TopProductsChart from "@/components/TopProductsChart";
 import Link from "next/link";
+import DashboardSearch from "@/components/DashboardSearch";
 
 export default async function AdminDashboard() {
   await connectDB();
@@ -32,7 +33,7 @@ export default async function AdminDashboard() {
   );
   const totalOrders = orders.length;
 
-  // Compute total units sold from orders (avoid relying on persisted Product.salesCount)
+  // Compute total units sold from orders
   const totalUnitsSold = orders.reduce(
     (sum: number, order: any) =>
       sum + order.items.reduce((s: number, it: any) => s + (it.quantity || 0), 0),
@@ -58,7 +59,7 @@ export default async function AdminDashboard() {
     };
   });
 
-  // Build sales data by aggregating orders (accurate even if Product.salesCount is stale)
+  // Build sales data by aggregating orders
   const productSalesMap: Record<string, { name: string; sales: number; revenue: number }> = {};
 
   products.forEach((p: any) => {
@@ -103,41 +104,77 @@ export default async function AdminDashboard() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Overview of your store</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+            Dashboard
+          </h1>
+          <p className="text-gray-600 mt-2">Overview of your store performance</p>
         </div>
-        <Link
-          href="/admin/products/add"
-          className="px-4 py-2 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-lg font-medium hover:from-purple-700 hover:to-indigo-700 transition-all shadow-md hover:shadow-lg"
-        >
-          + Add Product
-        </Link>
+        <div className="flex gap-3">
+          <DashboardSearch />
+          <Link
+            href="/admin/products/add"
+            className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Add Product
+          </Link>
+        </div>
       </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500 mb-2">Total Revenue</p>
+        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-6 rounded-2xl shadow-lg border border-purple-200 hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-purple-600 rounded-xl">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm font-semibold text-gray-600 mb-2">Total Revenue</p>
           <p className="text-3xl font-bold text-gray-900">₹{totalRevenue.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mt-2">All-time sales</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500 mb-2">Total Orders</p>
+        <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-2xl shadow-lg border border-indigo-200 hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-indigo-600 rounded-xl">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm font-semibold text-gray-600 mb-2">Total Orders</p>
           <p className="text-3xl font-bold text-gray-900">{totalOrders}</p>
           <p className="text-xs text-gray-500 mt-2">Completed orders</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500 mb-2">Total Products</p>
+        <div className="bg-gradient-to-br from-pink-50 to-pink-100 p-6 rounded-2xl shadow-lg border border-pink-200 hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-pink-600 rounded-xl">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm font-semibold text-gray-600 mb-2">Total Products</p>
           <p className="text-3xl font-bold text-gray-900">{totalProducts}</p>
           <p className="text-xs text-gray-500 mt-2">Active products</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500 mb-2">Units Sold</p>
+        <div className="bg-gradient-to-br from-cyan-50 to-cyan-100 p-6 rounded-2xl shadow-lg border border-cyan-200 hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-cyan-600 rounded-xl">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm font-semibold text-gray-600 mb-2">Units Sold</p>
           <p className="text-3xl font-bold text-gray-900">{totalUnitsSold.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mt-2">Total sales</p>
         </div>
@@ -145,20 +182,20 @@ export default async function AdminDashboard() {
 
       {/* Secondary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500 mb-2">Inventory Value</p>
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+          <p className="text-sm font-semibold text-gray-600 mb-2">Inventory Value</p>
           <p className="text-2xl font-bold text-gray-900">₹{totalValue.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mt-2">Current stock value</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500 mb-2">Total Stock</p>
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+          <p className="text-sm font-semibold text-gray-600 mb-2">Total Stock</p>
           <p className="text-2xl font-bold text-gray-900">{totalStock.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mt-2">Units in inventory</p>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <p className="text-sm font-medium text-gray-500 mb-2">Low Stock Items</p>
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
+          <p className="text-sm font-semibold text-gray-600 mb-2">Low Stock Items</p>
           <p className="text-2xl font-bold text-red-600">{lowStockProducts}</p>
           <p className="text-xs text-gray-500 mt-2">Need restocking</p>
         </div>
@@ -167,7 +204,7 @@ export default async function AdminDashboard() {
       {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Revenue Chart */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Revenue Trend</h2>
             <p className="text-sm text-gray-500 mt-1">Last 7 days</p>
@@ -176,7 +213,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Top Products Chart */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Top Selling Products</h2>
             <p className="text-sm text-gray-500 mt-1">Best performers</p>
@@ -194,7 +231,7 @@ export default async function AdminDashboard() {
       {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Sales by Product */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Sales by Product</h2>
             <p className="text-sm text-gray-500 mt-1">Units sold & revenue</p>
@@ -209,7 +246,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Stock Chart */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Stock per Product</h2>
             <p className="text-sm text-gray-500 mt-1">Current inventory levels</p>
@@ -220,14 +257,14 @@ export default async function AdminDashboard() {
 
       {/* Recent Orders */}
       {recentOrders.length > 0 && (
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Recent Orders</h2>
             <p className="text-sm text-gray-500 mt-1">Latest completed orders</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gradient-to-r from-gray-50 to-gray-100 border-b border-gray-200">
                 <tr>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Order #</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Customer</th>
@@ -238,7 +275,7 @@ export default async function AdminDashboard() {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {recentOrders.map((order: any) => (
-                  <tr key={order._id} className="hover:bg-gray-50">
+                  <tr key={order._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-4 py-3 text-sm font-medium text-gray-900">{order.orderNumber}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">{order.customerName}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">{order.items.length} item(s)</td>
