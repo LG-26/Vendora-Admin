@@ -18,6 +18,7 @@ export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchOrders();
@@ -43,6 +44,31 @@ export default function OrdersPage() {
       (order.customerEmail && order.customerEmail.toLowerCase().includes(query))
     );
   });
+
+  async function updateOrderStatus(orderId: string, nextStatus: string) {
+    setIsUpdating((prev) => ({ ...prev, [orderId]: true }));
+    try {
+      const res = await fetch(`/api/admin/orders?id=${orderId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
+      });
+      const data = await res.json();
+      if (data.success && data.order) {
+        setOrders((prev) =>
+          prev.map((o) => (o._id === orderId ? { ...o, status: data.order.status } : o))
+        );
+      } else {
+        console.error("Failed to update status", data?.error);
+        await fetchOrders();
+      }
+    } catch (err) {
+      console.error("Failed to update status", err);
+      await fetchOrders();
+    } finally {
+      setIsUpdating((prev) => ({ ...prev, [orderId]: false }));
+    }
+  }
 
   if (isLoading) {
     return (
@@ -153,17 +179,22 @@ export default function OrdersPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                      <select
+                        value={order.status}
+                        onChange={(e) => updateOrderStatus(order._id, e.target.value)}
+                        disabled={isUpdating[order._id]}
+                        className={`px-3 py-2 text-sm rounded-lg border ${
                           order.status === "completed"
-                            ? "bg-green-100 text-green-800"
+                            ? "bg-green-50 text-green-800 border-green-200"
                             : order.status === "pending"
-                            ? "bg-yellow-100 text-yellow-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
+                            ? "bg-yellow-50 text-yellow-800 border-yellow-200"
+                            : "bg-red-50 text-red-800 border-red-200"
+                        } focus:outline-none focus:ring-2 focus:ring-purple-500`}
                       >
-                        {order.status}
-                      </span>
+                        <option value="pending">Pending</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </select>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(order.createdAt).toLocaleDateString("en-US", {

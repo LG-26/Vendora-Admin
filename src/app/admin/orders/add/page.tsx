@@ -23,6 +23,7 @@ export default function AddOrderPage() {
   const [submitting, setSubmitting] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
+  const [orderStatus, setOrderStatus] = useState<"pending" | "completed" | "cancelled">("pending");
   const [orderItems, setOrderItems] = useState<
     Array<{ productId: string; quantity: number; product: Product }>
   >([]);
@@ -132,6 +133,7 @@ export default function AddOrderPage() {
         body: JSON.stringify({
           customerName: customerName.trim(),
           customerEmail: customerEmail.trim() || undefined,
+          status: orderStatus,
           items: orderItems.map((item) => ({
             productId: item.productId,
             quantity: item.quantity,
@@ -312,6 +314,24 @@ export default function AddOrderPage() {
                     className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label htmlFor="orderStatus" className="block text-sm font-semibold text-gray-700 mb-2">
+                  Order Status
+                </label>
+                <select
+                  id="orderStatus"
+                  value={orderStatus}
+                  onChange={(e) =>
+                    setOrderStatus(e.target.value as "pending" | "completed" | "cancelled")
+                  }
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+                >
+                  <option value="pending">Pending</option>
+                  <option value="completed">Completed</option>
+                  <option value="cancelled">Cancelled</option>
+                </select>
               </div>
             </div>
 

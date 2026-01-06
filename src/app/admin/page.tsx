@@ -12,7 +12,11 @@ export default async function AdminDashboard() {
   await connectDB();
 
   const products = await Product.find().lean();
-  const orders = await Order.find({ status: "completed" }).lean();
+  const orders = await Order.find().lean();
+
+  const completedOrders = orders.filter((order: any) => order.status === "completed");
+  const pendingOrders = orders.filter((order: any) => order.status === "pending");
+  const cancelledOrders = orders.filter((order: any) => order.status === "cancelled");
 
   const totalProducts = products.length;
   const totalStock = products.reduce(
@@ -25,13 +29,15 @@ export default async function AdminDashboard() {
   );
   const lowStockProducts = products.filter((product: any) => product.stock < 10).length;
 
-  const totalRevenue = orders.reduce(
+  const totalRevenue = completedOrders.reduce(
     (sum: number, order: any) => sum + order.totalAmount,
     0
   );
-  const totalOrders = orders.length;
+  const totalOrders = completedOrders.length;
+  const pendingCount = pendingOrders.length;
+  const cancelledCount = cancelledOrders.length;
 
-  const totalUnitsSold = orders.reduce(
+  const totalUnitsSold = completedOrders.reduce(
     (sum: number, order: any) =>
       sum + order.items.reduce((s: number, it: any) => s + (it.quantity || 0), 0),
     0
@@ -44,7 +50,7 @@ export default async function AdminDashboard() {
   });
 
   const revenueData = last7Days.map((date) => {
-    const dayOrders = orders.filter((order: any) => {
+    const dayOrders = completedOrders.filter((order: any) => {
       const orderDate = new Date(order.createdAt).toISOString().split("T")[0];
       return orderDate === date;
     });
@@ -65,7 +71,7 @@ export default async function AdminDashboard() {
     };
   });
 
-  orders.forEach((order: any) => {
+  completedOrders.forEach((order: any) => {
     order.items.forEach((it: any) => {
       const pid = it.productId.toString();
       if (!productSalesMap[pid]) {
@@ -170,6 +176,32 @@ export default async function AdminDashboard() {
           <p className="text-3xl font-bold text-gray-900">{totalUnitsSold.toLocaleString()}</p>
           <p className="text-xs text-gray-500 mt-2">Total sales</p>
         </div>
+
+        <div className="bg-linear-to-br from-yellow-50 to-yellow-100 p-6 rounded-2xl shadow-lg border border-yellow-200 hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-yellow-500 rounded-xl">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l2 2m6-2a8 8 0 11-16 0 8 8 0 0116 0z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm font-semibold text-gray-600 mb-2">Pending Orders</p>
+          <p className="text-3xl font-bold text-gray-900">{pendingCount}</p>
+          <p className="text-xs text-gray-500 mt-2">Awaiting completion</p>
+        </div>
+
+        <div className="bg-linear-to-br from-red-50 to-red-100 p-6 rounded-2xl shadow-lg border border-red-200 hover:shadow-xl transition-shadow">
+          <div className="flex items-center justify-between mb-4">
+            <div className="p-3 bg-red-500 rounded-xl">
+              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01M10 3h4l1 2h4a1 1 0 011 1v2M5 7h14l-1 12H6L5 7z" />
+              </svg>
+            </div>
+          </div>
+          <p className="text-sm font-semibold text-gray-600 mb-2">Cancelled Orders</p>
+          <p className="text-3xl font-bold text-gray-900">{cancelledCount}</p>
+          <p className="text-xs text-gray-500 mt-2">Not fulfilled</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -243,7 +275,7 @@ export default async function AdminDashboard() {
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Recent Orders</h2>
-            <p className="text-sm text-gray-500 mt-1">Latest completed orders</p>
+            <p className="text-sm text-gray-500 mt-1">Latest activity across all statuses</p>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -253,6 +285,7 @@ export default async function AdminDashboard() {
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Customer</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Items</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Amount</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Date</th>
                 </tr>
               </thead>
@@ -263,6 +296,19 @@ export default async function AdminDashboard() {
                     <td className="px-4 py-3 text-sm text-gray-700">{order.customerName}</td>
                     <td className="px-4 py-3 text-sm text-gray-700">{order.items.length} item(s)</td>
                     <td className="px-4 py-3 text-sm font-semibold text-gray-900">₹{order.totalAmount.toLocaleString()}</td>
+                    <td className="px-4 py-3 text-sm">
+                      <span
+                        className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                          order.status === "completed"
+                            ? "bg-green-100 text-green-800"
+                            : order.status === "pending"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-sm text-gray-700">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
