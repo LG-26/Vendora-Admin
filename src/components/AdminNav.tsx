@@ -17,17 +17,22 @@ export default function AdminNav() {
 
   const { data: session } = useSession();
 
-  const isActive = (href: string) => {
-    if (href === "/admin") {
-      return pathname === "/admin";
+  const activeHref = (() => {
+    let best = "";
+    for (const item of navItems) {
+      if (item.href === "/admin") {
+        if (pathname === "/admin" && item.href.length > best.length) best = item.href;
+      } else {
+        if (pathname.startsWith(item.href) && item.href.length > best.length) best = item.href;
+      }
     }
-    return pathname.startsWith(href);
-  };
+    return best;
+  })();
 
   return (
     <nav className="flex flex-col gap-1 px-4 py-4">
       {navItems.map((item) => {
-        const active = isActive(item.href);
+        const active = item.href === activeHref;
         return (
           <Link
             key={item.href}
