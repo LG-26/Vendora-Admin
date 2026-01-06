@@ -3,11 +3,13 @@
 import { useState } from "react";
 import { addProduct } from "./action";
 import Link from "next/link";
+import { PRODUCT_CATEGORIES } from "@/lib/constants/categories";
 
 export default function AddProductPage() {
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [category, setCategory] = useState<string>(PRODUCT_CATEGORIES[0]);
   const [stock, setStock] = useState("");
   const [image, setImage] = useState<File | null>(null);
 
@@ -26,6 +28,7 @@ export default function AddProductPage() {
     }
     formData.set("name", name);
     formData.set("price", price);
+    formData.set("category", category);
     formData.set("stock", stock);
     await addProduct(formData);
   }
@@ -107,6 +110,25 @@ export default function AddProductPage() {
                     step="0.01"
                     required
                   />
+                </div>
+
+                <div>
+                  <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="category"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                  >
+                    {PRODUCT_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="flex justify-end pt-4 mt-auto">

@@ -38,6 +38,7 @@ export async function updateProduct(id: string, formData: FormData) {
     name: formData.get("name"),
     price: Number(formData.get("price")),
     stock: Number(formData.get("stock")),
+    category: formData.get("category") as string || (existingProduct as any).category || "Mobile and Accessories",
     imageUrl: imageUrl || (existingProduct as any).imageUrl || "",
   };
 
@@ -51,6 +52,7 @@ export async function updateProduct(id: string, formData: FormData) {
     name: parsed.data.name,
     price: parsed.data.price,
     stock: parsed.data.stock,
+    category: parsed.data.category,
   };
 
   if (parsed.data.imageUrl) {

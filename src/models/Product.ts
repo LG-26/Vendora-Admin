@@ -14,6 +14,17 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    category: {
+      type: String,
+      enum: [
+        "Mobile and Accessories",
+        "Computer and Accessories",
+        "Home Appliances",
+        "Smart Home and Gadgets",
+        "Gaming and Entertainment",
+      ],
+      default: "Mobile and Accessories",
+    },
     imageUrl: {
       type: String,
     },

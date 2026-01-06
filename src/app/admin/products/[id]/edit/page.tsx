@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { updateProduct } from "./action";
+import { PRODUCT_CATEGORIES } from "@/lib/constants/categories";
 
 interface EditProductPageProps {
   params: { id: string };
@@ -13,6 +14,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   const [step, setStep] = useState(1);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
+  const [category, setCategory] = useState<string>(PRODUCT_CATEGORIES[0]);
   const [stock, setStock] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const [currentImageUrl, setCurrentImageUrl] = useState("");
@@ -32,6 +34,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
         setProduct(data.product);
         setName(data.product.name);
         setPrice(data.product.price.toString());
+        setCategory(data.product.category || PRODUCT_CATEGORIES[0]);
         setStock(data.product.stock.toString());
         setCurrentImageUrl(data.product.imageUrl || "");
       }
@@ -56,6 +59,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
     const formData = new FormData();
     formData.set("name", name);
     formData.set("price", price);
+    formData.set("category", category);
     formData.set("stock", stock);
     if (image) {
       formData.set("image", image);
@@ -159,6 +163,25 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                     step="0.01"
                     required
                   />
+                </div>
+
+                <div>
+                  <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-2">
+                    Category <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="category"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                    required
+                  >
+                    {PRODUCT_CATEGORIES.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className="flex justify-end pt-4 mt-auto">

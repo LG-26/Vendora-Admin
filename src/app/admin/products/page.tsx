@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { PRODUCT_CATEGORIES } from "@/lib/constants/categories";
 
 interface Product {
   _id: string;
   name: string;
   price: number;
   stock: number;
+  category?: string;
   imageUrl?: string;
 }
 
@@ -20,6 +22,7 @@ export default function ProductsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("name");
   const [stockFilter, setStockFilter] = useState<StockFilter>("all");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [priceRange, setPriceRange] = useState({ min: "", max: "" });
   const [isLoading, setIsLoading] = useState(true);
@@ -107,6 +110,9 @@ export default function ProductsPage() {
     // Search filter
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
     
+    // Category filter
+    const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
+    
     // Stock filter
     let matchesStock = true;
     if (stockFilter === "in-stock") matchesStock = product.stock > 10;
@@ -118,7 +124,7 @@ export default function ProductsPage() {
     if (priceRange.min) matchesPrice = matchesPrice && product.price >= Number(priceRange.min);
     if (priceRange.max) matchesPrice = matchesPrice && product.price <= Number(priceRange.max);
     
-    return matchesSearch && matchesStock && matchesPrice;
+    return matchesSearch && matchesCategory && matchesStock && matchesPrice;
   });
 
   // Sort products
@@ -203,7 +209,7 @@ export default function ProductsPage() {
 
       {/* Filters and Controls */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
           {/* Search */}
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -219,6 +225,20 @@ export default function ProductsPage() {
               className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
             />
           </div>
+
+          {/* Category Filter */}
+          <select
+            value={categoryFilter}
+            onChange={(e) => setCategoryFilter(e.target.value)}
+            className="w-full px-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all"
+          >
+            <option value="all">All Categories</option>
+            {PRODUCT_CATEGORIES.map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
 
           {/* Sort */}
           <select
@@ -348,11 +368,11 @@ export default function ProductsPage() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
           </svg>
           <p className="text-gray-500 text-lg mb-4">
-            {searchQuery || stockFilter !== "all" || priceRange.min || priceRange.max
+            {searchQuery || categoryFilter !== "all" || stockFilter !== "all" || priceRange.min || priceRange.max
               ? "No products found matching your filters"
               : "No products found"}
           </p>
-          {!searchQuery && stockFilter === "all" && !priceRange.min && !priceRange.max && (
+          {!searchQuery && categoryFilter === "all" && stockFilter === "all" && !priceRange.min && !priceRange.max && (
             <Link
               href="/admin/products/add"
               className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg"
@@ -412,6 +432,11 @@ export default function ProductsPage() {
 
               {/* Product Info */}
               <div className="p-5">
+                {product.category && (
+                  <span className="inline-block px-2 py-1 text-xs font-semibold text-purple-700 bg-purple-100 rounded-full mb-2">
+                    {product.category}
+                  </span>
+                )}
                 <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2">
                         {product.name}
                 </h3>
@@ -463,7 +488,14 @@ export default function ProductsPage() {
                     />
                   )}
                   <div className="flex-1">
-                    <h3 className="font-bold text-gray-900">{product.name}</h3>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-bold text-gray-900">{product.name}</h3>
+                      {product.category && (
+                        <span className="px-2 py-0.5 text-xs font-semibold text-purple-700 bg-purple-100 rounded-full">
+                          {product.category}
+                        </span>
+                      )}
+                    </div>
                     <div className="flex items-center gap-4 mt-1 text-sm text-gray-600">
                       <span>₹{product.price.toLocaleString()}</span>
                       <span

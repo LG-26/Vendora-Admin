@@ -30,6 +30,7 @@ export async function addProduct(formData: FormData) {
     name: formData.get("name"),
     price: Number(formData.get("price")),
     stock: Number(formData.get("stock")),
+    category: formData.get("category") as string,
     imageUrl,
   };
 
