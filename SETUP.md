@@ -45,7 +45,6 @@ npm run dev
 ### 4. Access the Application
 
 - **Home Page**: http://localhost:3000
-- **Login Page**: http://localhost:3000/login
 - **Admin Dashboard**: http://localhost:3000/admin (requires login)
 
 ### 5. Login Credentials
