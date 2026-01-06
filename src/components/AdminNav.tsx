@@ -32,7 +32,7 @@ export default function AdminNav() {
           <Link
             key={item.href}
             href={item.href}
-            className={`px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+            className={`block w-full px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
               active
                 ? "bg-purple-100 text-purple-700 border-l-4 border-purple-600"
                 : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
@@ -45,7 +45,7 @@ export default function AdminNav() {
       {session?.user?.role === "admin" && (
         <Link
           href="/admin/onboard"
-          className={`mt-3 px-4 py-3 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100`}
+          className={`block w-full mt-3 px-4 py-3 rounded-lg font-medium text-sm text-gray-700 hover:bg-gray-100`}
         >
           Onboard Admin
         </Link>
