@@ -5,6 +5,7 @@ import StockChart from "@/components/StockChart";
 import RevenueChart from "@/components/RevenueChart";
 import SalesByProductChart from "@/components/SalesByProductChart";
 import TopProductsChart from "@/components/TopProductsChart";
+import ChartsWithCategoryFilter from "@/components/ChartsWithCategoryFilter";
 import Link from "next/link";
 import DashboardSearch from "@/components/DashboardSearch";
 
@@ -61,13 +62,15 @@ export default async function AdminDashboard() {
     };
   });
 
-  const productSalesMap: Record<string, { name: string; sales: number; revenue: number }> = {};
+  const productSalesMap: Record<string, { id: string; name: string; sales: number; revenue: number; category?: string }> = {};
 
   products.forEach((p: any) => {
     productSalesMap[p._id.toString()] = {
+      id: p._id.toString(),
       name: p.name.length > 15 ? p.name.substring(0, 15) + "..." : p.name,
       sales: 0,
       revenue: 0,
+      category: p.category,
     };
   });
 
@@ -75,10 +78,14 @@ export default async function AdminDashboard() {
     order.items.forEach((it: any) => {
       const pid = it.productId.toString();
       if (!productSalesMap[pid]) {
+        // try find product to get category
+        const found = products.find((pp: any) => pp._id.toString() === pid);
         productSalesMap[pid] = {
+          id: pid,
           name: it.productName.length > 15 ? it.productName.substring(0, 15) + "..." : it.productName,
           sales: 0,
           revenue: 0,
+          category: found ? found.category : undefined,
         };
       }
       productSalesMap[pid].sales += it.quantity || 0;
@@ -254,7 +261,8 @@ export default async function AdminDashboard() {
             <p className="text-sm text-gray-500 mt-1">Units sold & revenue</p>
           </div>
           {salesByProduct.length > 0 ? (
-            <SalesByProductChart data={salesByProduct} />
+            // ChartsWithCategoryFilter in 'sales' mode: only show SalesByProductChart here
+            <ChartsWithCategoryFilter mode="sales" products={products} salesByProduct={salesByProduct} />
           ) : (
             <div className="flex items-center justify-center h-75 text-gray-500">
               No sales data available
@@ -267,7 +275,8 @@ export default async function AdminDashboard() {
             <h2 className="text-xl font-semibold text-gray-900">Stock per Product</h2>
             <p className="text-sm text-gray-500 mt-1">Current inventory levels</p>
           </div>
-          <StockChart data={products} />
+          {/* Render stock-only filter/chart separately */}
+          <ChartsWithCategoryFilter mode="stock" products={products} salesByProduct={salesByProduct} />
         </div>
       </div>
 
