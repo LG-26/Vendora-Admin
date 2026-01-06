@@ -54,35 +54,14 @@ Use the credentials you set in `.env.local`:
 - Email: Value of `ADMIN_EMAIL`
 - Password: Value of `ADMIN_PASSWORD`
 
-## Features Available
+## Additional Notes (recommended)
+- Node: project tested on Node 18+ — use a compatible Node version.
+- Keep `.env.local` out of version control (add to `.gitignore`).
+- Production: set `NEXTAUTH_URL` to your deployed base URL (must match host) and configure env vars in your hosting provider.
+- Bootstrap admin: for initial access you can set `ADMIN_EMAIL`/`ADMIN_PASSWORD` in `.env.local` to use the bootstrap fallback when no admin exists.
+- MongoDB Atlas: ensure network access (IP whitelist or proper VPC settings) so the app can connect.
+- Security: use a strong `NEXTAUTH_SECRET`, avoid bootstrap creds in production, and rotate Cloudinary/API keys when needed.
 
-✅ **Frontend Updates Completed:**
-- Modern landing page
-- Styled login page
-- Enhanced admin dashboard with sidebar navigation
-- Product management (list, add, edit, delete)
-- Stock tracking and charts
-- Image uploads via Cloudinary
-- Responsive design with Tailwind CSS
-
-## Troubleshooting
-
-**Tailwind CSS not working?**
-- Make sure `postcss.config.mjs` exists
-- Restart the dev server after configuration changes
-
-**MongoDB connection error?**
-- Check your `MONGODB_URI` is correct
-- Make sure MongoDB is running (if using local)
-- For Atlas: Check your IP is whitelisted
-
-**Image uploads not working?**
-- Verify Cloudinary credentials are correct
-- Check Cloudinary dashboard for upload settings
-
-**Authentication issues?**
-- Make sure `NEXTAUTH_SECRET` is set
-- Verify `ADMIN_EMAIL` and `ADMIN_PASSWORD` match your login attempt
 
 
 
