@@ -105,21 +105,13 @@ export default function ProductsPage() {
     }
   }
 
-  // Filter products
   let filteredProducts = products.filter((product) => {
-    // Search filter
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    // Category filter
     const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
-    
-    // Stock filter
     let matchesStock = true;
     if (stockFilter === "in-stock") matchesStock = product.stock > 10;
     else if (stockFilter === "low-stock") matchesStock = product.stock > 0 && product.stock <= 10;
     else if (stockFilter === "out-of-stock") matchesStock = product.stock === 0;
-    
-    // Price range filter
     let matchesPrice = true;
     if (priceRange.min) matchesPrice = matchesPrice && product.price >= Number(priceRange.min);
     if (priceRange.max) matchesPrice = matchesPrice && product.price <= Number(priceRange.max);
@@ -127,7 +119,6 @@ export default function ProductsPage() {
     return matchesSearch && matchesCategory && matchesStock && matchesPrice;
   });
 
-  // Sort products
   filteredProducts = [...filteredProducts].sort((a, b) => {
     switch (sortBy) {
       case "name":
@@ -145,7 +136,6 @@ export default function ProductsPage() {
     }
   });
 
-  // Calculate statistics
   const stats = {
     total: products.length,
     inStock: products.filter((p) => p.stock > 10).length,
@@ -156,7 +146,7 @@ export default function ProductsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
       </div>
     );
@@ -167,14 +157,14 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold bg-linear-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
             Products
           </h1>
           <p className="text-gray-600 mt-2">Manage your product inventory</p>
         </div>
         <Link
           href="/admin/products/add"
-          className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+          className="px-5 py-2.5 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -183,34 +173,32 @@ export default function ProductsPage() {
         </Link>
       </div>
 
-      {/* Statistics Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-        <div className="bg-gradient-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
+        <div className="bg-linear-to-br from-blue-50 to-blue-100 p-4 rounded-xl border border-blue-200">
           <p className="text-xs font-semibold text-blue-600 mb-1">Total Products</p>
           <p className="text-2xl font-bold text-blue-900">{stats.total}</p>
         </div>
-        <div className="bg-gradient-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
+        <div className="bg-linear-to-br from-green-50 to-green-100 p-4 rounded-xl border border-green-200">
           <p className="text-xs font-semibold text-green-600 mb-1">In Stock</p>
           <p className="text-2xl font-bold text-green-900">{stats.inStock}</p>
         </div>
-        <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 p-4 rounded-xl border border-yellow-200">
+        <div className="bg-linear-to-br from-yellow-50 to-yellow-100 p-4 rounded-xl border border-yellow-200">
           <p className="text-xs font-semibold text-yellow-600 mb-1">Low Stock</p>
           <p className="text-2xl font-bold text-yellow-900">{stats.lowStock}</p>
         </div>
-        <div className="bg-gradient-to-br from-red-50 to-red-100 p-4 rounded-xl border border-red-200">
+        <div className="bg-linear-to-br from-red-50 to-red-100 p-4 rounded-xl border border-red-200">
           <p className="text-xs font-semibold text-red-600 mb-1">Out of Stock</p>
           <p className="text-2xl font-bold text-red-900">{stats.outOfStock}</p>
         </div>
-        <div className="bg-gradient-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
+        <div className="bg-linear-to-br from-purple-50 to-purple-100 p-4 rounded-xl border border-purple-200">
           <p className="text-xs font-semibold text-purple-600 mb-1">Total Value</p>
           <p className="text-lg font-bold text-purple-900">₹{stats.totalValue.toLocaleString()}</p>
         </div>
       </div>
 
-      {/* Filters and Controls */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-4">
-          {/* Search */}
+
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -226,7 +214,6 @@ export default function ProductsPage() {
             />
           </div>
 
-          {/* Category Filter */}
           <select
             value={categoryFilter}
             onChange={(e) => setCategoryFilter(e.target.value)}
@@ -240,7 +227,6 @@ export default function ProductsPage() {
             ))}
           </select>
 
-          {/* Sort */}
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value as SortOption)}
@@ -253,7 +239,6 @@ export default function ProductsPage() {
             <option value="stock-high">Stock: High to Low</option>
           </select>
 
-          {/* Stock Filter */}
           <select
             value={stockFilter}
             onChange={(e) => setStockFilter(e.target.value as StockFilter)}
@@ -265,7 +250,6 @@ export default function ProductsPage() {
             <option value="out-of-stock">Out of Stock</option>
           </select>
 
-          {/* View Toggle */}
           <div className="flex items-center gap-2">
             <button
               onClick={() => setViewMode("grid")}
@@ -296,7 +280,6 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Price Range Filter */}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold text-gray-600 mb-1">Min Price (₹)</label>
@@ -322,7 +305,6 @@ export default function ProductsPage() {
           </div>
         </div>
 
-        {/* Bulk Actions */}
         {selectedProducts.size > 0 && (
           <div className="mt-4 p-4 bg-purple-50 rounded-xl border border-purple-200 flex items-center justify-between">
             <span className="text-sm font-semibold text-purple-900">
@@ -346,7 +328,6 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* Results Count */}
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-600">
           Showing <span className="font-semibold">{filteredProducts.length}</span> of {products.length} products
@@ -361,7 +342,6 @@ export default function ProductsPage() {
         )}
       </div>
 
-      {/* Products Display */}
       {filteredProducts.length === 0 ? (
         <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-12 text-center">
           <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -375,7 +355,7 @@ export default function ProductsPage() {
           {!searchQuery && categoryFilter === "all" && stockFilter === "all" && !priceRange.min && !priceRange.max && (
             <Link
               href="/admin/products/add"
-              className="inline-block px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg"
+              className="inline-block px-6 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg"
             >
               Add your first product
             </Link>
@@ -390,7 +370,6 @@ export default function ProductsPage() {
                 selectedProducts.has(product._id) ? "border-purple-500 ring-2 ring-purple-200" : "border-gray-200"
               }`}
             >
-              {/* Checkbox - positioned at top-left of card */}
               <div className="absolute top-3 left-3 z-20">
                 <input
                   type="checkbox"
@@ -400,8 +379,7 @@ export default function ProductsPage() {
                 />
               </div>
 
-              {/* Product Image */}
-              <div className="relative h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+              <div className="relative h-48 bg-linear-to-br from-gray-100 to-gray-200 overflow-hidden">
                       {product.imageUrl ? (
                           <img
                             src={product.imageUrl}
@@ -430,7 +408,6 @@ export default function ProductsPage() {
                 </div>
               </div>
 
-              {/* Product Info */}
               <div className="p-5">
                 {product.category && (
                   <span className="inline-block px-2 py-1 text-xs font-semibold text-purple-700 bg-purple-100 rounded-full mb-2">
@@ -444,11 +421,10 @@ export default function ProductsPage() {
                   ₹{product.price.toLocaleString()}
                 </p>
 
-                {/* Actions */}
                 <div className="flex gap-2">
                   <Link
                     href={`/admin/products/${product._id}/edit`}
-                    className="flex-1 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium hover:from-indigo-700 hover:to-purple-700 transition-all text-center text-sm"
+                    className="flex-1 px-4 py-2 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-lg font-medium hover:from-indigo-700 hover:to-purple-700 transition-all text-center text-sm"
                   >
                     Edit
                   </Link>

@@ -14,7 +14,6 @@ export default async function AdminDashboard() {
   const products = await Product.find().lean();
   const orders = await Order.find({ status: "completed" }).lean();
 
-  // Calculate metrics
   const totalProducts = products.length;
   const totalStock = products.reduce(
     (sum: number, product: any) => sum + product.stock,
@@ -25,22 +24,19 @@ export default async function AdminDashboard() {
     0
   );
   const lowStockProducts = products.filter((product: any) => product.stock < 10).length;
-  
-  // Sales metrics
+
   const totalRevenue = orders.reduce(
     (sum: number, order: any) => sum + order.totalAmount,
     0
   );
   const totalOrders = orders.length;
 
-  // Compute total units sold from orders
   const totalUnitsSold = orders.reduce(
     (sum: number, order: any) =>
       sum + order.items.reduce((s: number, it: any) => s + (it.quantity || 0), 0),
     0
   );
 
-  // Calculate revenue for last 7 days
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
     date.setDate(date.getDate() - (6 - i));
@@ -59,7 +55,6 @@ export default async function AdminDashboard() {
     };
   });
 
-  // Build sales data by aggregating orders
   const productSalesMap: Record<string, { name: string; sales: number; revenue: number }> = {};
 
   products.forEach((p: any) => {
@@ -87,7 +82,6 @@ export default async function AdminDashboard() {
 
   const salesByProduct = Object.values(productSalesMap).filter((item) => item.sales > 0);
 
-  // Top products (sorted by sales)
   const topProducts = Object.values(productSalesMap)
     .map((item) => ({
       name: item.name.length > 20 ? item.name.substring(0, 20) + "..." : item.name,
@@ -97,7 +91,6 @@ export default async function AdminDashboard() {
     .sort((a, b) => b.sales - a.sales)
     .slice(0, 10);
 
-  // Recent orders (last 5)
   const recentOrders = orders
     .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
     .slice(0, 5);
@@ -125,7 +118,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-linear-to-br from-purple-50 to-purple-100 p-6 rounded-2xl shadow-lg border border-purple-200 hover:shadow-xl transition-shadow">
           <div className="flex items-center justify-between mb-4">
@@ -180,7 +172,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Secondary Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-shadow">
           <p className="text-sm font-semibold text-gray-600 mb-2">Inventory Value</p>
@@ -201,9 +192,7 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Charts Row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Revenue Chart */}
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Revenue Trend</h2>
@@ -212,7 +201,6 @@ export default async function AdminDashboard() {
           <RevenueChart data={revenueData} />
         </div>
 
-        {/* Top Products Chart */}
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Top Selling Products</h2>
@@ -227,10 +215,7 @@ export default async function AdminDashboard() {
           )}
         </div>
       </div>
-
-      {/* Charts Row 2 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Sales by Product */}
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Sales by Product</h2>
@@ -245,7 +230,6 @@ export default async function AdminDashboard() {
           )}
         </div>
 
-        {/* Stock Chart */}
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">
             <h2 className="text-xl font-semibold text-gray-900">Stock per Product</h2>
@@ -255,7 +239,6 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      {/* Recent Orders */}
       {recentOrders.length > 0 && (
         <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
           <div className="mb-6">

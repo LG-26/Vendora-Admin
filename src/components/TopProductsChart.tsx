@@ -10,19 +10,18 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-interface TopProductData {
+interface TopProduct {
   name: string;
   sales: number;
 }
 
-export default function TopProductsChart({ data }: { data: TopProductData[] }) {
-  // Take top 5 products
+export default function TopProductsChart({ data }: { data: TopProduct[] }) {
   const topProducts = [...data].sort((a, b) => b.sales - a.sales).slice(0, 5);
 
   return (
-    <div style={{ width: "100%", height: 300 }}>
+    <div style={{ width: "100%", height: 320 }}>
       <ResponsiveContainer>
-        <BarChart data={topProducts} layout="vertical">
+        <BarChart data={topProducts} layout="vertical" margin={{ top: 12, right: 16, bottom: 12, left: 16 }}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
           <XAxis type="number" stroke="#6b7280" />
           <YAxis dataKey="name" type="category" stroke="#6b7280" width={120} />

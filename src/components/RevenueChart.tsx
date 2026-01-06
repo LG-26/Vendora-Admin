@@ -13,17 +13,17 @@ import {
   Legend,
 } from "recharts";
 
-interface RevenueData {
+interface RevenuePoint {
   date: string;
   revenue: number;
   orders: number;
 }
 
-export default function RevenueChart({ data }: { data: RevenueData[] }) {
+export default function RevenueChart({ data }: { data: RevenuePoint[] }) {
   return (
-    <div style={{ width: "100%", height: 300 }}>
+    <div style={{ width: "100%", height: 340 }}>
       <ResponsiveContainer>
-        <AreaChart data={data}>
+        <AreaChart data={data} margin={{ top: 16, right: 16, bottom: 8, left: 16 }}>
           <defs>
             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />

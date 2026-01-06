@@ -22,7 +22,6 @@ export default function AnimatedBackground() {
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {/* Animated e-commerce icons */}
       {ecommerceIcons.map((item, index) => (
         <div
           key={index}
@@ -38,15 +37,13 @@ export default function AnimatedBackground() {
         </div>
       ))}
       
-      {/* Enhanced floating gradient orbs with more movement */}
       <div className="absolute w-96 h-96 bg-purple-400 rounded-full blur-3xl opacity-35 -top-24 -left-24 animate-drift" />
-      <div className="absolute w-[500px] h-[500px] bg-pink-400 rounded-full blur-3xl opacity-35 top-1/3 -right-24 animate-drift-reverse" />
+      <div className="absolute w-125 h-125 bg-pink-400 rounded-full blur-3xl opacity-35 top-1/3 -right-24 animate-drift-reverse" />
       <div className="absolute w-80 h-80 bg-indigo-400 rounded-full blur-3xl opacity-35 -bottom-12 left-1/4 animate-drift" />
       <div className="absolute w-72 h-72 bg-blue-400 rounded-full blur-3xl opacity-30 top-1/2 right-1/5 animate-pulse-slow" />
-      <div className="absolute w-[400px] h-[400px] bg-cyan-400 rounded-full blur-3xl opacity-25 top-3/4 left-1/2 animate-drift" />
+      <div className="absolute w-100 h-100 bg-cyan-400 rounded-full blur-3xl opacity-25 top-3/4 left-1/2 animate-drift" />
       <div className="absolute w-64 h-64 bg-violet-400 rounded-full blur-3xl opacity-30 bottom-1/4 right-1/3 animate-drift-reverse" />
       
-      {/* Animated grid pattern */}
       <div className="absolute inset-0 opacity-10" style={{
         backgroundImage: `linear-gradient(rgba(139, 92, 246, 0.1) 1px, transparent 1px),
                           linear-gradient(90deg, rgba(139, 92, 246, 0.1) 1px, transparent 1px)`,

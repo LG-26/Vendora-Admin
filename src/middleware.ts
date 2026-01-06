@@ -14,7 +14,6 @@ export async function middleware(req: NextRequest) {
     if (!token) {
       return NextResponse.redirect(new URL("/login", req.url));
     }
-    // Only allow users with role 'admin'
     if ((token as any).role !== "admin") {
       return NextResponse.redirect(new URL("/", req.url));
     }

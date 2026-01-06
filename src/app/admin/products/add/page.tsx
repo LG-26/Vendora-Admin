@@ -36,21 +36,19 @@ export default function AddProductPage() {
   return (
     <div className="max-w-3xl mx-auto pb-12">
       <div className="mb-6">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+        <h1 className="text-4xl font-bold bg-linear-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
           Add New Product
         </h1>
         <p className="text-gray-600">Step {step} of 2</p>
       </div>
 
-      {/* Progress Bar */}
       <div className="mb-8">
         <div className="flex items-center gap-2">
-          <div className={`flex-1 h-3 rounded-full transition-all duration-500 ${step >= 1 ? "bg-gradient-to-r from-purple-600 to-indigo-600" : "bg-gray-200"}`}></div>
-          <div className={`flex-1 h-3 rounded-full transition-all duration-500 ${step >= 2 ? "bg-gradient-to-r from-purple-600 to-indigo-600" : "bg-gray-200"}`}></div>
+          <div className={`flex-1 h-3 rounded-full transition-all duration-500 ${step >= 1 ? "bg-linear-to-r from-purple-600 to-indigo-600" : "bg-gray-200"}`}></div>
+          <div className={`flex-1 h-3 rounded-full transition-all duration-500 ${step >= 2 ? "bg-linear-to-r from-purple-600 to-indigo-600" : "bg-gray-200"}`}></div>
         </div>
       </div>
 
-      {/* Form Container with Flip Animation */}
       <div className="relative perspective-1000 mb-32" style={{ minHeight: "650px" }}>
         <div
           className="relative preserve-3d transition-transform duration-600"
@@ -59,7 +57,6 @@ export default function AddProductPage() {
             transform: step === 2 ? "rotateY(180deg)" : "rotateY(0deg)",
           }}
         >
-          {/* Step 1 - Front */}
           <div
             className="backface-hidden absolute inset-0 w-full"
             style={{
@@ -68,9 +65,9 @@ export default function AddProductPage() {
               transform: "rotateY(0deg)",
             }}
           >
-            <div className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 rounded-3xl shadow-2xl border border-purple-100/50 p-8 h-full flex flex-col">
+            <div className="bg-linear-to-br from-white via-purple-50/30 to-indigo-50/30 rounded-3xl shadow-2xl border border-purple-100/50 p-8 h-full flex flex-col">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl mb-4 shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-purple-600 to-indigo-600 rounded-2xl mb-4 shadow-lg">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
@@ -133,7 +130,7 @@ export default function AddProductPage() {
 
                 <div className="flex justify-end pt-4 mt-auto">
                   <button
-                    className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-8 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button"
                     onClick={handleNext}
                     disabled={!name || !price}
@@ -148,7 +145,6 @@ export default function AddProductPage() {
             </div>
           </div>
 
-          {/* Step 2 - Back */}
           <div
             className="backface-hidden absolute inset-0 w-full"
             style={{
@@ -157,9 +153,9 @@ export default function AddProductPage() {
               transform: "rotateY(180deg)",
             }}
           >
-            <div className="bg-gradient-to-br from-white via-indigo-50/30 to-purple-50/30 rounded-3xl shadow-2xl border border-indigo-100/50 p-8 h-full flex flex-col">
+            <div className="bg-linear-to-br from-white via-indigo-50/30 to-purple-50/30 rounded-3xl shadow-2xl border border-indigo-100/50 p-8 h-full flex flex-col">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
@@ -225,7 +221,7 @@ export default function AddProductPage() {
                   </button>
 
                   <button
-                    className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                    className="px-8 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
                     type="submit"
                   >
                     Create Product

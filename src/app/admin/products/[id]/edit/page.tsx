@@ -69,7 +69,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex items-center justify-center min-h-100">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-600"></div>
       </div>
     );
@@ -89,21 +89,19 @@ export default function EditProductPage({ params }: EditProductPageProps) {
   return (
     <div className="max-w-3xl mx-auto pb-12">
       <div className="mb-6">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+        <h1 className="text-4xl font-bold bg-linear-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
           Edit Product
         </h1>
         <p className="text-gray-600">Step {step} of 2</p>
       </div>
 
-      {/* Progress Bar */}
       <div className="mb-8">
         <div className="flex items-center gap-2">
-          <div className={`flex-1 h-3 rounded-full transition-all duration-500 ${step >= 1 ? "bg-gradient-to-r from-purple-600 to-indigo-600" : "bg-gray-200"}`}></div>
-          <div className={`flex-1 h-3 rounded-full transition-all duration-500 ${step >= 2 ? "bg-gradient-to-r from-purple-600 to-indigo-600" : "bg-gray-200"}`}></div>
+          <div className={`flex-1 h-3 rounded-full transition-all duration-500 ${step >= 1 ? "bg-linear-to-r from-purple-600 to-indigo-600" : "bg-gray-200"}`}></div>
+          <div className={`flex-1 h-3 rounded-full transition-all duration-500 ${step >= 2 ? "bg-linear-to-r from-purple-600 to-indigo-600" : "bg-gray-200"}`}></div>
         </div>
       </div>
 
-      {/* Form Container with Flip Animation */}
       <div className="relative perspective-1000 mb-32" style={{ minHeight: "650px" }}>
         <div
           className="relative preserve-3d transition-transform duration-600"
@@ -112,7 +110,6 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             transform: step === 2 ? "rotateY(180deg)" : "rotateY(0deg)",
           }}
         >
-          {/* Step 1 - Front */}
           <div
             className="backface-hidden absolute inset-0 w-full"
             style={{
@@ -121,9 +118,9 @@ export default function EditProductPage({ params }: EditProductPageProps) {
               transform: "rotateY(0deg)",
             }}
           >
-            <div className="bg-gradient-to-br from-white via-purple-50/30 to-indigo-50/30 rounded-3xl shadow-2xl border border-purple-100/50 p-8 h-full flex flex-col">
+            <div className="bg-linear-to-br from-white via-purple-50/30 to-indigo-50/30 rounded-3xl shadow-2xl border border-purple-100/50 p-8 h-full flex flex-col">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-2xl mb-4 shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-purple-600 to-indigo-600 rounded-2xl mb-4 shadow-lg">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
@@ -186,7 +183,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
 
                 <div className="flex justify-end pt-4 mt-auto">
                   <button
-                    className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-8 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                     type="button"
                     onClick={handleNext}
                     disabled={!name || !price}
@@ -201,7 +198,6 @@ export default function EditProductPage({ params }: EditProductPageProps) {
             </div>
           </div>
 
-          {/* Step 2 - Back */}
           <div
             className="backface-hidden absolute inset-0 w-full"
             style={{
@@ -210,9 +206,9 @@ export default function EditProductPage({ params }: EditProductPageProps) {
               transform: "rotateY(180deg)",
             }}
           >
-            <div className="bg-gradient-to-br from-white via-indigo-50/30 to-purple-50/30 rounded-3xl shadow-2xl border border-indigo-100/50 p-8 h-full flex flex-col">
+            <div className="bg-linear-to-br from-white via-indigo-50/30 to-purple-50/30 rounded-3xl shadow-2xl border border-indigo-100/50 p-8 h-full flex flex-col">
               <div className="text-center mb-8">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
+                <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-br from-indigo-600 to-purple-600 rounded-2xl mb-4 shadow-lg">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
@@ -243,7 +239,6 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                     Product Image
                   </label>
                   
-                  {/* Current Image */}
                   {currentImageUrl && !image && (
                     <div className="mb-4">
                       <p className="text-sm text-gray-600 mb-2">Current Image:</p>
@@ -257,7 +252,6 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                     </div>
                   )}
 
-                  {/* New Image Preview */}
                   {image && (
                     <div className="mb-4">
                       <p className="text-sm text-gray-600 mb-2">New Image Preview:</p>
@@ -294,7 +288,7 @@ export default function EditProductPage({ params }: EditProductPageProps) {
                   </button>
 
                   <button
-                    className="px-8 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+                    className="px-8 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
                     type="submit"
                   >
                     Update Product

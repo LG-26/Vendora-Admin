@@ -28,7 +28,6 @@ export async function updateProduct(id: string, formData: FormData) {
 
   await connectDB();
 
-  // Get existing product to preserve imageUrl if no new image is uploaded
   const existingProduct = await Product.findById(id).lean();
   if (!existingProduct) {
     throw new Error("Product not found");

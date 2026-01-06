@@ -22,7 +22,6 @@ const handler = NextAuth({
 
         await connectDB();
 
-        // Try DB-backed admin first
         const user = await Admin.findOne({ email }).lean();
         if (user) {
           const match = await bcrypt.compare(password, (user as any).passwordHash);
@@ -32,7 +31,6 @@ const handler = NextAuth({
           return null;
         }
 
-        // Fallback to env bootstrap admin (one-time use)
         if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
           return {
             id: "bootstrap-admin",
@@ -53,7 +51,6 @@ const handler = NextAuth({
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        // copy role into token when available
         (token as any).role = (user as any).role || "admin";
       }
       return token;

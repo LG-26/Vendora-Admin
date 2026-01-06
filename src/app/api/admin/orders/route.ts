@@ -25,7 +25,6 @@ export async function GET(req: Request) {
       return NextResponse.json({ orders });
     }
 
-    // Return all orders if no search query
     const orders = await Order.find()
       .sort({ createdAt: -1 })
       .lean();
@@ -54,7 +53,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Validate products and check stock
     const orderItems = [];
     let totalAmount = 0;
 
@@ -88,10 +86,8 @@ export async function POST(req: Request) {
       totalAmount += product.price * item.quantity;
     }
 
-    // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
-    // Create order
     const order = await Order.create({
       orderNumber,
       items: orderItems,
@@ -101,7 +97,6 @@ export async function POST(req: Request) {
       customerEmail: customerEmail || undefined,
     });
 
-    // Update product stock, sales count, and revenue
     for (const item of orderItems) {
       await Product.findByIdAndUpdate(item.productId, {
         $inc: {

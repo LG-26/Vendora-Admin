@@ -30,7 +30,6 @@ export default function DashboardSearch() {
     }
   }
 
-  // Group results by customer
   const customerGroups = results.reduce((acc: any, order: any) => {
     const key = order.customerEmail || order.customerName;
     if (!acc[key]) {

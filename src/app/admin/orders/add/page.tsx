@@ -3,12 +3,14 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { PRODUCT_CATEGORIES } from "@/lib/constants/categories";
 
 interface Product {
   _id: string;
   name: string;
   price: number;
   stock: number;
+  category?: string;
 }
 
 export default function AddOrderPage() {
@@ -16,6 +18,7 @@ export default function AddOrderPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState<string>("all");
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [customerName, setCustomerName] = useState("");
@@ -29,20 +32,24 @@ export default function AddOrderPage() {
   }, []);
 
   useEffect(() => {
-    // Filter products based on search query
+    const matchesCategory = (product: Product) =>
+      categoryFilter === "all" ? true : product.category === categoryFilter;
+
     if (searchQuery.trim() === "") {
-      setFilteredProducts(products);
-    } else {
-      const query = searchQuery.toLowerCase();
-      setFilteredProducts(
-        products.filter(
-          (product) =>
-            product.name.toLowerCase().includes(query) ||
-            product.price.toString().includes(query)
-        )
-      );
+      setFilteredProducts(products.filter(matchesCategory));
+      return;
     }
-  }, [searchQuery, products]);
+
+    const query = searchQuery.toLowerCase();
+    setFilteredProducts(
+      products.filter(
+        (product) =>
+          (product.name.toLowerCase().includes(query) ||
+            product.price.toString().includes(query)) &&
+          matchesCategory(product)
+      )
+    );
+  }, [searchQuery, products, categoryFilter]);
 
   async function fetchProducts() {
     try {
@@ -65,14 +72,14 @@ export default function AddOrderPage() {
     );
 
     if (existingIndex >= 0) {
-      // Increase quantity if already in order
+      
       const updatedItems = [...orderItems];
       if (updatedItems[existingIndex].quantity < product.stock) {
         updatedItems[existingIndex].quantity += 1;
         setOrderItems(updatedItems);
       }
     } else {
-      // Add new product to order
+      
       if (product.stock > 0) {
         setOrderItems([
           ...orderItems,
@@ -87,7 +94,6 @@ export default function AddOrderPage() {
     if (!product) return;
 
     if (newQuantity <= 0) {
-      // Remove item from order
       setOrderItems(orderItems.filter((item) => item.productId !== productId));
     } else if (newQuantity <= product.stock) {
       setOrderItems(
@@ -164,14 +170,13 @@ export default function AddOrderPage() {
   return (
     <div className="max-w-6xl mx-auto">
       <div className="mb-6">
-        <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
+        <h1 className="text-4xl font-bold bg-linear-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent mb-2">
           Create New Order
         </h1>
         <p className="text-gray-600">Add a new order and update inventory</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Products List */}
         <div className="lg:col-span-2">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
             <div className="flex items-center justify-between mb-4">
@@ -181,30 +186,43 @@ export default function AddOrderPage() {
               </span>
             </div>
 
-            {/* Search Bar */}
-            <div className="relative mb-6">
-              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search products by name or price..."
-                className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white shadow-sm"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute inset-y-0 right-0 pr-4 flex items-center"
-                >
-                  <svg className="w-5 h-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+              <div className="relative md:col-span-2">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
-                </button>
-              )}
+                </div>
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search products by name or price..."
+                  className="w-full pl-12 pr-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white shadow-sm"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute inset-y-0 right-0 pr-4 flex items-center"
+                  >
+                    <svg className="w-5 h-5 text-gray-400 hover:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition-all bg-white shadow-sm"
+              >
+                <option value="all">All categories</option>
+                {PRODUCT_CATEGORIES.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {products.length === 0 ? (
@@ -223,7 +241,7 @@ export default function AddOrderPage() {
                 </button>
               </div>
             ) : (
-              <div className="space-y-3 max-h-[600px] overflow-y-auto">
+              <div className="space-y-3 max-h-37.5 overflow-y-auto">
                 {filteredProducts.map((product) => (
                   <div
                     key={product._id}
@@ -251,7 +269,7 @@ export default function AddOrderPage() {
                     <button
                       onClick={() => addProductToOrder(product)}
                       disabled={product.stock === 0}
-                      className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
+                      className="px-5 py-2.5 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-sm whitespace-nowrap"
                     >
                       {product.stock === 0 ? "Out of Stock" : "Add to Order"}
                     </button>
@@ -262,7 +280,6 @@ export default function AddOrderPage() {
           </div>
         </div>
 
-        {/* Order Summary */}
         <div className="lg:col-span-1">
           <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 space-y-6 sticky top-6">
             <div>
@@ -298,7 +315,6 @@ export default function AddOrderPage() {
               </div>
             </div>
 
-            {/* Order Items */}
             <div>
               <h3 className="text-lg font-semibold text-gray-900 mb-3">Order Items ({orderItems.length})</h3>
               {orderItems.length === 0 ? (
@@ -309,11 +325,11 @@ export default function AddOrderPage() {
                   <p className="text-sm text-gray-500">No items added yet</p>
                 </div>
               ) : (
-                <div className="space-y-3 max-h-[300px] overflow-y-auto">
+                <div className="space-y-3 max-h-75 overflow-y-auto">
                   {orderItems.map((item) => (
                     <div
                       key={item.productId}
-                      className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200"
+                      className="flex items-center justify-between p-3 bg-linear-to-r from-purple-50 to-indigo-50 rounded-xl border border-purple-200"
                     >
                       <div className="flex-1">
                         <p className="font-semibold text-gray-900 text-sm">{item.product.name}</p>
@@ -352,19 +368,17 @@ export default function AddOrderPage() {
               )}
             </div>
 
-            {/* Total */}
             {orderItems.length > 0 && (
               <div className="border-t-2 border-gray-200 pt-4">
                 <div className="flex justify-between items-center mb-4">
                   <span className="text-lg font-semibold text-gray-900">Total:</span>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                  <span className="text-2xl font-bold bg-linear-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
                     ₹{totalAmount.toLocaleString()}
                   </span>
                 </div>
               </div>
             )}
 
-            {/* Actions */}
             <div className="flex gap-3">
               <Link
                 href="/admin/orders"
@@ -375,7 +389,7 @@ export default function AddOrderPage() {
               <button
                 type="submit"
                 disabled={submitting || orderItems.length === 0}
-                className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-4 py-3 bg-linear-to-r from-purple-600 to-indigo-600 text-white rounded-xl font-semibold hover:from-purple-700 hover:to-indigo-700 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {submitting ? "Creating..." : "Create Order"}
               </button>
