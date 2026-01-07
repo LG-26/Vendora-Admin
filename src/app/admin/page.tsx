@@ -9,6 +9,8 @@ import ChartsWithCategoryFilter from "@/components/ChartsWithCategoryFilter";
 import Link from "next/link";
 import DashboardSearch from "@/components/DashboardSearch";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboard() {
   await connectDB();
 
